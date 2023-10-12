@@ -13,6 +13,7 @@ public class Main {
 
         System.out.println(tree);
         tree.growth();
+        tree.changeLeavesState();
         System.out.println(tree + "\n");
 
         System.out.println(coniferTree);

@@ -1,6 +1,5 @@
 package trees;
 
-import trees.Tree;
 
 public class DeciduousTree extends Tree {
     public DeciduousTree() {
@@ -26,6 +25,17 @@ public class DeciduousTree extends Tree {
     public void growth() {
         height+=growthRate;
         System.out.println("Deciduous Tree has grown, it's now " + height + " meters");
+    }
+
+    public void changeLeavesState(){
+        if(leaves.contains( species + " Leaves"))
+        {
+            leaves = "Leaves fell off";
+        }
+        else
+        {
+            leaves = species + " Leaves";
+        }
     }
 
     @Override
