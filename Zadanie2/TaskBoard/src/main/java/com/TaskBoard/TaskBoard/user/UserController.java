@@ -50,6 +50,17 @@ public class UserController {
         return ResponseEntity.badRequest().body("User with that id does not exist");
     }
 
+    @GetMapping
+    public ResponseEntity<?> getUsers()
+    {
+        return ResponseEntity.ok(this.userService.getUsers());
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getUser(@PathVariable Long id)
+    {
+        return ResponseEntity.ok(this.userService.getUser(id));
+    }
+
     private ResponseEntity<?> getResponseEntity(@RequestBody User userDetails, BindingResult bindingResult) {
         userValidator.validate(userDetails,bindingResult);
         if (bindingResult.hasErrors()) {
