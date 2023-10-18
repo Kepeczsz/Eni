@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface UserRoleRepository extends JpaRepository<UserRole, Long> {
 
     UserRole findByUserAndTask(User user, Task task);
+
+    UserRole findByTaskIdAndUserId(Long taskId, Long userId);
 }
