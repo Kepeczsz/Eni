@@ -16,7 +16,7 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final UserValidator userValidator;
-    @Autowired
+
     public UserController(UserService userService, UserValidator userValidator) {
         this.userService = userService;
         this.userValidator = userValidator;

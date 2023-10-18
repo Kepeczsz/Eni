@@ -16,75 +16,47 @@ import java.util.List;
 @CrossOrigin
 public class TaskController {
     private final TaskService taskService;
-    private final TaskValidator taskValidator;
-    @Autowired
-    public TaskController(TaskService taskService, TaskValidator taskValidator){
+
+    public TaskController(TaskService taskService){
         this.taskService = taskService;
-        this.taskValidator = taskValidator;
     }
 
     @PostMapping
-    public ResponseEntity<?> addTask(@RequestBody Task task, BindingResult bindingResult){
-        ResponseEntity<?> errorMessages = getResponseEntity(task, bindingResult);
-         if(errorMessages != null) return errorMessages;
-
-        return ResponseEntity.ok(this.taskService.addTask(task));
+    public ResponseEntity<String> addTask(@RequestBody Task task, BindingResult bindingResult){
+        return this.taskService.addTask(task, bindingResult);
     }
-    @GetMapping
-    public ResponseEntity<?> getTasks() {
-        return ResponseEntity.ok(this.taskService.getTasks());
+    @GetMapping("/getTasks")
+    public ResponseEntity<List<Task>> getTasks() {
+        return this.taskService.getTasks();
     }
-    @PutMapping("/{id}/{userId}")
-    public ResponseEntity<String> assignUserToTask(@PathVariable  Long id, @PathVariable Long userId ){
-        boolean isAssigned = this.taskService.assignUserToTask(id, userId);
-        if(isAssigned)
-            return ResponseEntity.ok("User is assgigned");
-        return ResponseEntity.badRequest().body("User could not be assigned");
-    }
-
     @GetMapping("/task/{id}")
-    public ResponseEntity<?> getTask(@PathVariable Long id){
-        return ResponseEntity.ok(this.taskService.getTask(id));
+    public ResponseEntity<Task> getTask(@PathVariable Long id){
+        return this.taskService.getTask(id);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteTask(@PathVariable Long id){
-        boolean isDeleted = this.taskService.deleteTask(id);
-        if (isDeleted) {
-            return ResponseEntity.ok("Task with ID " + id + " has been deleted successfully.");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task with ID " + id + " was not found or could not be deleted.");
-        }
+    public ResponseEntity<String> deleteTask(@PathVariable Long id){
+        return this.taskService.deleteTask(id);
+    }
+
+    @PutMapping("/{id}/{userId}")
+    public ResponseEntity<String> assignUserToTask(@PathVariable  Long id, @PathVariable Long userId ){
+        return this.taskService.assignUserToTask(id,userId);
     }
 
     @DeleteMapping("/{taskId}/{userId}")
-    public ResponseEntity<?> removeUserFromTask(@PathVariable Long taskId, @PathVariable Long userId)
+    public ResponseEntity<String> removeUserFromTask(@PathVariable Long taskId, @PathVariable Long userId)
     {
-        boolean isDeleted = this.taskService.deleteUserFromTask(taskId, userId);
-        if (isDeleted) {
-            return ResponseEntity.ok("User with ID " + userId + " has been removed successfully.");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User with ID " + userId + " was not found or could not be deleted.");
-        }
-    }
-
-    private ResponseEntity<?> getResponseEntity(@RequestBody Task taskDetails, BindingResult bindingResult) {
-        taskValidator.validate(taskDetails,bindingResult);
-        if (bindingResult.hasErrors()) {
-           List<String> errorMessages = new ArrayList<>();
-            for (FieldError fieldError : bindingResult.getFieldErrors()) {
-                errorMessages.add(fieldError.getDefaultMessage());
-            }
-           return ResponseEntity.badRequest().body(errorMessages);
-        }
-        return null;
+        return this.taskService.removeUserFromTask(taskId,userId);
     }
 
     @GetMapping("/getFilteredTasks")
-    public ResponseEntity<?> getFilteredTasks(@RequestBody Filter taskFilter){
-        List<Task> taskList = this.taskService.getFilteredTasks(taskFilter);
-        if( taskList != null)
-            return ResponseEntity.ok(taskList);
-        return ResponseEntity.badRequest().body("something went wrong");
+    public ResponseEntity<List<Task>> getFilteredTasks(@RequestBody Filter taskFilter){
+        return this.taskService.getFilteredTasks(taskFilter);
+    }
+
+    @PutMapping("/editTaskDeitals/{taskId}")
+    public ResponseEntity<String> updateTaskDetails(@PathVariable Long taskId, @RequestBody Task task, BindingResult bindingResult){
+        return this.taskService.updateTask(taskId, task, bindingResult);
     }
 }
