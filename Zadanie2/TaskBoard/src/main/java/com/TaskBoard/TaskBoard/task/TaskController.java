@@ -1,5 +1,6 @@
 package com.TaskBoard.TaskBoard.task;
 
+import com.TaskBoard.TaskBoard.queries.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,6 @@ public class TaskController {
         ResponseEntity<?> errorMessages = getResponseEntity(task, bindingResult);
          if(errorMessages != null) return errorMessages;
 
-
         return ResponseEntity.ok(this.taskService.addTask(task));
     }
     @GetMapping
@@ -35,8 +35,11 @@ public class TaskController {
         return ResponseEntity.ok(this.taskService.getTasks());
     }
     @PutMapping("/{id}/{userId}")
-    public void assignUserToTask(@PathVariable  Long id, @PathVariable Long userId ){
-        this.taskService.assignUserToTask(id, userId);
+    public ResponseEntity<String> assignUserToTask(@PathVariable  Long id, @PathVariable Long userId ){
+        boolean isAssigned = this.taskService.assignUserToTask(id, userId);
+        if(isAssigned)
+            return ResponseEntity.ok("User is assgigned");
+        return ResponseEntity.badRequest().body("User could not be assigned");
     }
 
     @GetMapping("/task/{id}")
@@ -54,6 +57,17 @@ public class TaskController {
         }
     }
 
+    @DeleteMapping("/{taskId}/{userId}")
+    public ResponseEntity<?> removeUserFromTask(@PathVariable Long taskId, @PathVariable Long userId)
+    {
+        boolean isDeleted = this.taskService.deleteUserFromTask(taskId, userId);
+        if (isDeleted) {
+            return ResponseEntity.ok("User with ID " + userId + " has been removed successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User with ID " + userId + " was not found or could not be deleted.");
+        }
+    }
+
     private ResponseEntity<?> getResponseEntity(@RequestBody Task taskDetails, BindingResult bindingResult) {
         taskValidator.validate(taskDetails,bindingResult);
         if (bindingResult.hasErrors()) {
@@ -64,5 +78,13 @@ public class TaskController {
            return ResponseEntity.badRequest().body(errorMessages);
         }
         return null;
+    }
+
+    @GetMapping("/getFilteredTasks")
+    public ResponseEntity<?> getFilteredTasks(@RequestBody Filter taskFilter){
+        List<Task> taskList = this.taskService.getFilteredTasks(taskFilter);
+        if( taskList != null)
+            return ResponseEntity.ok(taskList);
+        return ResponseEntity.badRequest().body("something went wrong");
     }
 }

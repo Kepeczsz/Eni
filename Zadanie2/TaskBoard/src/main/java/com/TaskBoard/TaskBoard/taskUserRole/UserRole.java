@@ -10,8 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 
 @Entity
 @Getter
@@ -26,7 +24,7 @@ public class UserRole {
     @SequenceGenerator(name = "user_role_sequence", sequenceName = "user_role_sequence", allocationSize = 1)
     private Long id;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private User user;
     @OneToOne
     private Role role;

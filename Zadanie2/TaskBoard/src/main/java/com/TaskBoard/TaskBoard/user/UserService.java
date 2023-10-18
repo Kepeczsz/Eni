@@ -1,11 +1,14 @@
 package com.TaskBoard.TaskBoard.user;
 
+import com.TaskBoard.TaskBoard.queries.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -20,7 +23,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Boolean existsById(Long id){
+    public boolean existsById(Long id){
         return userRepository.existsById(id);
     }
 
@@ -46,4 +49,23 @@ public class UserService {
        return this.userRepository.findAll();
     }
 
+    public List<User> getFilteredUsers(Filter userFilter) {
+        return this.userRepository.findAll().stream()
+                .filter(user -> {
+                    try {
+                        Field field = User.class.getDeclaredField(userFilter.getFieldName());
+                        field.setAccessible(true);
+                        Object foundUser = field.get(user);
+                        if (foundUser != null && foundUser.toString().contains(userFilter.getSearch())) {
+                            return true;
+                        }
+                    } catch (NoSuchFieldException | IllegalAccessException e) {
+                        throw new RuntimeException("Field '" + userFilter.getFieldName() + "' does not exist in the User class.");
+
+                    }
+                    return false;
+                })
+                .collect(Collectors.toList());
+
+    }
 }

@@ -1,5 +1,6 @@
 package com.TaskBoard.TaskBoard.user;
 
+import com.TaskBoard.TaskBoard.queries.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -47,7 +48,7 @@ public class UserController {
             this.userService.updateUser(id, userDetails);
             return ResponseEntity.ok().body("User has been changed");
         }
-        return ResponseEntity.badRequest().body("User with that id does not exist");
+        return ResponseEntity.badRequest().body("User with that id does not exist or requested body is invalid");
     }
 
     @GetMapping
@@ -73,5 +74,12 @@ public class UserController {
         return null;
     }
 
+    @GetMapping("/getUsers")
+    public ResponseEntity<?> getFilteredUsers(@RequestBody Filter userFilter){
+        List<User> userList = this.userService.getFilteredUsers(userFilter);
+        if( userList != null)
+            return ResponseEntity.ok(userList);
+        return ResponseEntity.badRequest().body("something went wrong");
+    }
 
 }

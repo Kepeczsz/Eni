@@ -30,7 +30,7 @@ public class Task {
     private TaskPriority priority;
     private TaskStatus taskStatus;
 
-    @OneToMany(mappedBy = "task")
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
     @JsonManagedReference
     List<UserRole> userList = new ArrayList<>();
 

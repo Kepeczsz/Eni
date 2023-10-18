@@ -17,7 +17,6 @@ public class TaskValidator implements Validator {
         validateField(task.getTitle(), "title", errors, "title is required.");
         validateField(String.valueOf(task.getDueTo()), "dueTo", errors, "dueTo is required.");
         validateField(String.valueOf(task.getTaskStatus()), "task status", errors, "task status is required.");
-
     }
 
     private static void validateField(String value, String fieldName, Errors errors, String errorMessage) {
