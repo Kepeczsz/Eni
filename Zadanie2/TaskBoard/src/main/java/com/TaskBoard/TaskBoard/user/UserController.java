@@ -15,71 +15,40 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
-    private final UserValidator userValidator;
 
-    public UserController(UserService userService, UserValidator userValidator) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.userValidator = userValidator;
     }
 
-    @PostMapping
-    public ResponseEntity<?> addUser(@RequestBody User user, BindingResult bindingResult) {
-        ResponseEntity<?> errorMessages = getResponseEntity(user, bindingResult);
-        if (errorMessages != null) return errorMessages;
-
-        return ResponseEntity.ok(this.userService.addUser(user));
+    @PostMapping("/addUser")
+    public ResponseEntity<String> addUser(@RequestBody User user, BindingResult bindingResult) {
+        return this.userService.addUser(user, bindingResult);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id){
-        if(userService.existsById(id)) {
-            this.userService.deleteUserById(id);
-            return ResponseEntity.ok().body("User has been deleted");
-        }
-        return ResponseEntity.badRequest().body("User with that id does not exist");
+    public ResponseEntity<String> deleteUser(@PathVariable Long id){
+        return this.userService.deleteUserById(id);
     }
 
     @PutMapping({"/{id}"})
-    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User userDetails, BindingResult bindingResult) {
-        if(userService.existsById(id)) {
-            ResponseEntity<?> errorMessages = getResponseEntity(userDetails, bindingResult);
-            if (errorMessages != null) return errorMessages;
-
-            this.userService.updateUser(id, userDetails);
-            return ResponseEntity.ok().body("User has been changed");
-        }
-        return ResponseEntity.badRequest().body("User with that id does not exist or requested body is invalid");
-    }
-
-    @GetMapping
-    public ResponseEntity<?> getUsers()
-    {
-        return ResponseEntity.ok(this.userService.getUsers());
-    }
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getUser(@PathVariable Long id)
-    {
-        return ResponseEntity.ok(this.userService.getUser(id));
-    }
-
-    private ResponseEntity<?> getResponseEntity(@RequestBody User userDetails, BindingResult bindingResult) {
-        userValidator.validate(userDetails,bindingResult);
-        if (bindingResult.hasErrors()) {
-            List<String> errorMessages = new ArrayList<>();
-            for (FieldError fieldError : bindingResult.getFieldErrors()) {
-                errorMessages.add(fieldError.getDefaultMessage());
-            }
-            return ResponseEntity.badRequest().body(errorMessages);
-        }
-        return null;
+    public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody User userDetails, BindingResult bindingResult) {
+        return this.userService.updateUser(id, userDetails, bindingResult);
     }
 
     @GetMapping("/getUsers")
-    public ResponseEntity<?> getFilteredUsers(@RequestBody Filter userFilter){
-        List<User> userList = this.userService.getFilteredUsers(userFilter);
-        if( userList != null)
-            return ResponseEntity.ok(userList);
-        return ResponseEntity.badRequest().body("something went wrong");
+    public ResponseEntity<List<User>> getUsers()
+    {
+        return this.userService.getUsers();
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUser(@PathVariable Long id)
+    {
+        return this.userService.getUser(id);
+    }
+
+    @GetMapping("/getFilteredUsers")
+    public ResponseEntity<List<User>> getFilteredUsers(@RequestBody Filter userFilter){
+        return this.userService.getFilteredUsers(userFilter);
     }
 
 }
