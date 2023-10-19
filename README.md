@@ -6,4 +6,5 @@ Zrobić dokumentacje,
 Dodać autoryzacje,
 Dodać testy,
 Zrobić bardziej użyteczne validatory,
-Zrobić lepszą obsługę błędów.
+Zrobić lepszą obsługę błędów,
+Zrobić paginację przy wyswietlaniu filtrowanych wyników.
